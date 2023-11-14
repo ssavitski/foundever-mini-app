@@ -52,7 +52,7 @@ export default () => {
 
     const query: TMarketParams = {
       ids,
-      vs_currency: currencyActive,
+      vs_currency: currencyActive.value,
       per_page: itemsByPage,
       include_24h_vol: true,
       include_24hr_change: true,
