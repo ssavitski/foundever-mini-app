@@ -1,8 +1,4 @@
-import { TCryptoData } from "@/stores/crypto.types";
-
-type TSortCharacter = {
-  [key: string]: string;
-};
+import { TCryptoData, TSortCharacter } from "@/api/api";
 
 export const sorterCharacter = (index: string) => {
   return (a: TSortCharacter, b: TSortCharacter): number => {

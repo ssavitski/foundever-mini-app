@@ -4,8 +4,8 @@ import { reactive, Ref, toRefs } from "vue";
 import useLocalStorage from '@/composables/useLocalStorage';
 import { Router, RouteLocation } from "vue-router";
 
-export type TLangs = 'fr' | 'en'
-type TThemes = 'light' | 'dark'
+export type TLangs = 'fr' | 'en';
+type TThemes = 'light' | 'dark';
 
 export interface IAppProvider {
   lang: Ref<TLangs>

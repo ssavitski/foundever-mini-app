@@ -4,7 +4,7 @@ import { useInfiniteScroll } from "@vueuse/core";
 import { Spinner } from "@/app.organizer";
 import { TDynamicSort } from "./BaseDynamicSorts.vue";
 import { useScroll } from '@vueuse/core'
-import { TCryptoData } from "@/stores/crypto.types";
+import { TCryptoData } from "@/api/api";
 
 
 export type TParamsUpdateFilters = {

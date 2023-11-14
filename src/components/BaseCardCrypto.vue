@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { storeToRefs } from "pinia";
-import { TCryptoData } from "@/stores/crypto.types";
-import { useCryptoStore } from "@/stores/crypto";
+import { useI18n } from "vue-i18n";
+import { TCryptoData } from "@/api/api";
+import useCurrencies from "@/composables/useCurrencies";
+import useFavorites from "@/composables/useFavorites";
 import {
   BaseCryptoChart,
   BaseSelectFilter,
@@ -10,18 +11,16 @@ import {
   Spinner,
 } from "@/app.organizer";
 import useCurrencySymbol from "@/composables/useCurrencySymbol";
-import { useI18n } from "vue-i18n";
+
 
 const props = defineProps<{
   item: TCryptoData,
 }>();
 
-const cryptoStore = useCryptoStore();
 const crypto = props.item;
-const { currencyActive, cryptoFavorites, currenciesList } =
-  storeToRefs(cryptoStore);
 
-const { setCurrencyActive, addFavorite, removeFavorite } = cryptoStore;
+const { currencyActive, currenciesList, setCurrencyActive } = useCurrencies();
+const { cryptoFavorites, addFavorite, removeFavorite } = useFavorites();
 
 const currencySymbol = computed(() => useCurrencySymbol(currencyActive.value));
 const chartElement = ref();

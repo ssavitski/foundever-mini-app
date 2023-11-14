@@ -3,7 +3,7 @@ import type { BaseDynamicList } from "@/app.organizer";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { sorterCharacter, sorterPrices, sorterSparkline7days} from "@/utils/sorters";
-import { useCryptoStore } from "@/stores/crypto";
+import useCurrencies from "@/composables/useCurrencies";
 import { BarsArrowDownIcon, BarsArrowUpIcon } from '@heroicons/vue/24/solid'
 
 export type TDynamicSort = {
@@ -18,7 +18,7 @@ const props = defineProps<{
 
 const { t: print } = useI18n();
 
-const { currencyActive } = useCryptoStore();
+const { currencyActive } = useCurrencies();
 
 const lastSorter = ref<TDynamicSort>({
   index: "name",

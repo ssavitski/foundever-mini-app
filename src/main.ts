@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./app.router";
-import { createPinia } from "pinia";
 import { createMetaManager } from "vue-meta";
 import { createI18n } from "vue-i18n";
 import VueLazyLoad from "vue3-lazyload";
@@ -26,6 +25,5 @@ const app = createApp(App);
 app.use(router);
 app.use(i18n);
 app.use(VueLazyLoad, {});
-app.use(createPinia());
 app.use(createMetaManager());
 app.mount("#root");

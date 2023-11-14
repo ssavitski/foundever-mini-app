@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+import { onBeforeRouteUpdate } from "vue-router";
 import {
   ref,
   computed,
@@ -15,32 +17,24 @@ import {
   BaseDynamicList,
   BaseLineCrypto,
 } from "@/app.organizer";
-import { useCryptoStore } from "@/stores/crypto";
-import { useI18n } from "vue-i18n";
-import { TCryptoData } from "@/stores/crypto.types";
+import useCurrencies from "@/composables/useCurrencies";
+import useCrypto from "@/composables/useCrypto";
+import { TCryptoData } from "@/api/api";
 import { IAppProvider } from "@/providers/app";
-import { storeToRefs } from "pinia";
-import { onBeforeRouteUpdate } from "vue-router";
 
 
 const App = inject<IAppProvider>("App");
 
 const props = defineProps<{
-  title: string;
-  cryptoList: Record<string, TCryptoData>;
-  component: DefineComponent<any, any, any>;
+  title: string,
+  cryptoList: Record<string, TCryptoData>,
+  component: DefineComponent<any, any, any>,
 }>();
 
 const { t: print } = useI18n();
 
-const cryptoStore = useCryptoStore();
-const {
-  currencyActive,
-  currenciesList,
-  itemsByPage,
-} = storeToRefs(cryptoStore);
-
-const { fetchCryptosInfos, setCurrencyActive } = cryptoStore;
+const { currenciesList, currencyActive, setCurrencyActive } = useCurrencies();
+const { fetchCryptosInfos, itemsByPage } = useCrypto();
 
 const blocCurrent = ref(1);
 const dynamicController = ref() as Ref<typeof BaseDynamicList>;
@@ -53,7 +47,7 @@ const updatePricesForList = (orderedCryptoList: TCryptoData[]) => {
 };
 
 const cryptoData = computed(() =>
-  Object.values(props.cryptoList).slice(0, blocCurrent.value * itemsByPage.value)
+  Object.values(props.cryptoList).slice(0, blocCurrent.value * itemsByPage)
 );
 
 const onCurrencyChange = (currency: string) => {

@@ -1,13 +1,11 @@
 import instance from "./instance";
 import type {
-  TCryptoList,
-  TCryptoItem,
-  TEntryCryptoData,
-} from "@/stores/crypto.types";
-import type {
   TCurrencies,
   TCoins,
   TMarkets,
+  TCryptoList,
+  TEntryCryptoData,
+  TCryptoItem,
 } from "./api";
 
 
