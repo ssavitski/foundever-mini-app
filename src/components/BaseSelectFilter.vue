@@ -27,12 +27,12 @@ const onChange = (e: Event) => {
 <template>
   <select @change="(event) => onChange(event)">
     <option
-      v-for="(item, i) in props.options"
-      :key="`opt-${i}`"
-      :value="item.value"
-      :selected="item.value === props.default"
+      v-for="({ value, label }) in props.options"
+      :key="`opt-${value}`"
+      :value="value"
+      :selected="value === props.default"
     >
-      {{ item.label }}
+      {{ label }}
     </option>
   </select>
 </template>

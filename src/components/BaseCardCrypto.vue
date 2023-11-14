@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { storeToRefs } from "pinia";
-import { TCryptoData } from "@/stores/crypto.types";
-import { useCryptoStore } from "@/stores/crypto";
+import { useI18n } from "vue-i18n";
+import { TCryptoData } from "@/api/api";
+import useCurrencies from "@/composables/useCurrencies";
+import useFavorites from "@/composables/useFavorites";
 import {
   BaseCryptoChart,
   BaseSelectFilter,
@@ -10,50 +11,43 @@ import {
   Spinner,
 } from "@/app.organizer";
 import useCurrencySymbol from "@/composables/useCurrencySymbol";
-import { useI18n } from "vue-i18n";
+
 
 const props = defineProps<{
-    itemId: string,
+  item: TCryptoData,
 }>();
 
-const cryptoStore = useCryptoStore();
+const crypto = props.item;
 
-const { currencyActive, cryptoFavorites, currenciesList,  cryptoList } =
-  storeToRefs(cryptoStore);
+const { currencyActive, currenciesList, setCurrencyActive } = useCurrencies();
+const { cryptoFavorites, addFavorite, removeFavorite } = useFavorites();
 
-const { setCurrencyActive, addFavorite, removeFavorite } = cryptoStore;
-
-const crypto = ref(cryptoList.value.get(props.itemId) as TCryptoData)
 const currencySymbol = computed(() => useCurrencySymbol(currencyActive.value));
 const chartElement = ref();
 
 const { t: print } = useI18n();
 
 const isInFavorites = computed(() => {
-        if (crypto.value)
-            !!cryptoFavorites.value.get(crypto.value.id)
-        return false;
+  if (crypto) !!cryptoFavorites.value[crypto.id];
+
+  return false;
 })
 
 
-const currenciesListOptions = computed(() => {
-  return currenciesList.value.map((c) => {
-    return {
-      value: c,
-      label: c,
-    };
-  });
-});
+const currenciesListOptions = computed(() => currenciesList.value.map((c) => ({
+  value: c,
+  label: c,
+})));
 
 const toggleFavorite = () => {
-  if (isInFavorites.value && crypto.value) {
-    removeFavorite(crypto.value);
-  } else if (crypto.value) addFavorite(crypto.value);
+  if (isInFavorites.value && crypto) {
+    removeFavorite(crypto);
+  } else if (crypto) addFavorite(crypto);
 };
 
 const calculatedSparkline = computed(() => {
-  if (!crypto?.value?.sparkline_in_7d?.length) return false;
-  const toReduce = crypto.value.sparkline_in_7d;
+  if (!crypto?.sparkline_in_7d?.length) return false;
+  const toReduce = crypto.sparkline_in_7d;
   const reduced = toReduce.reduce((acc, val, index) => {
     if (index && index % 23 === 0) acc.push(val);
     return acc;

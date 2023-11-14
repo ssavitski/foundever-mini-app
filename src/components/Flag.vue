@@ -4,6 +4,7 @@ type TProps = {
   type: 'en' | 'fr';
   width?: string;
   isActive: boolean;
+  mode: 'light' | 'dark',
 };
 const props = withDefaults(defineProps<TProps>(), {
   width: "30px",
@@ -11,7 +12,7 @@ const props = withDefaults(defineProps<TProps>(), {
   isActive: true,
 });
 
-const imageSource = new URL(`../assets/img/flags/${props.type}.png`, import.meta.url).href
+const imageSource = new URL(`../assets/img/flags/${props.type}.png`, import.meta.url).href;
 
 </script>
 
@@ -21,7 +22,7 @@ const imageSource = new URL(`../assets/img/flags/${props.type}.png`, import.meta
     :style="{ width: props.width }"
   >
     <img
-      :class="{ isloading: props.isLoading, active: props.isActive }"
+      :class="{ isloading: props.isLoading, active: props.isActive, [props.mode]: true }"
       class="el-flags"
       :src="imageSource"
       style="width: 100%"
@@ -29,25 +30,32 @@ const imageSource = new URL(`../assets/img/flags/${props.type}.png`, import.meta
   </div>
 </template>
 
-<style>
+<style lang="scss" scoped>
 .el-flags {
   transition: all 0.4s;
-}
 
-.el-flags.active {
-  border-radius: 5px;
-  border: 2px solid rgba(255, 255, 255, 0.7);
-}
+  &.active {
+    border-radius: 5px;
 
-.el-flags:not(.active) {
-  border-radius: 5px;
-  cursor: pointer;
-  opacity: 0.5;
-  border: 2px solid rgba(0, 0, 0, 0);
-}
+    &.light {
+      border: 2px solid rgba(0, 0, 0, 0.7);
+    }
 
-.el-flags.isloading {
-  border-radius: 5px;
-  border: 2px dashed rgba(255, 255, 255, 0.4);
+    &.dark {
+      border: 2px solid rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  &:not(.active) {
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0.5;
+    border: 2px solid rgba(0, 0, 0, 0);
+  }
+
+  &.isloading {
+    border-radius: 5px;
+    border: 2px dashed rgba(255, 255, 255, 0.4);
+  }
 }
 </style>

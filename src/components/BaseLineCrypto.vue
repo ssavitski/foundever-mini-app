@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, inject } from "vue";
-import { storeToRefs } from "pinia";
-import { TCryptoData } from "@/stores/crypto.types";
-import { useCryptoStore } from "@/stores/crypto";
+import { computed, ref } from "vue";
+import { TCryptoData } from "@/api/api";
+import useCurrencies from "@/composables/useCurrencies";
+import useFavorites from "@/composables/useFavorites";
 import { BaseCryptoChart, FavoriteStar, Spinner } from "@/app.organizer";
 import { useIntersectionObserver } from "@vueuse/core";
 import useCurrencySymbol from "@/composables/useCurrencySymbol";
@@ -10,39 +10,34 @@ import useCurrencySymbol from "@/composables/useCurrencySymbol";
 import { ROUTE_CRYPTO_VIEW } from "@/app.routes";
 
 const props = defineProps<{
-    itemId: string,
+  item: TCryptoData;
 }>();
 
-const cryptoStore = useCryptoStore();
-
-const { currencyActive, cryptoList, cryptoFavorites } = storeToRefs(cryptoStore);
-const { addFavorite, removeFavorite } = cryptoStore;
-
-const crypto = ref(cryptoList.value.get(props.itemId) as TCryptoData)
-
+const { currencyActive } = useCurrencies();
+const { cryptoFavorites, addFavorite, removeFavorite } = useFavorites();
+const crypto = props.item;
 const currencySymbol = computed(() => useCurrencySymbol(currencyActive.value));
-
 const chartElement = ref();
 const chartIsVisible = ref(true);
 
 const isInFavorites = computed(() =>
-  crypto.value ? (cryptoFavorites.value.get(crypto.value.id) ? true : false): false
+  crypto ? (!!cryptoFavorites.value[crypto.id]): false
 );
 
 const toggleFavorite = () => {
-  if (isInFavorites.value && crypto.value) {
-    removeFavorite(crypto.value);
-  } else if (crypto.value) addFavorite(crypto.value);
+  if (isInFavorites.value && crypto) {
+    removeFavorite(crypto);
+  } else if (crypto) addFavorite(crypto);
 };
 
 useIntersectionObserver(chartElement, ([{ isIntersecting }]) => {
-  chartIsVisible.value = true;
+  chartIsVisible.value = isIntersecting;
 });
 
 const calculatedSparkline = computed(() => {
-  if (!crypto?.value?.sparkline_in_7d?.length) return [] as number[];
+  if (!crypto?.sparkline_in_7d?.length) return [] as number[];
 
-  const toReduce = crypto.value.sparkline_in_7d;
+  const toReduce = crypto.sparkline_in_7d;
 
   const reduced = toReduce.reduce((acc, val, index) => {
     if (index && index % 23 === 0) acc.push(val);
@@ -66,7 +61,7 @@ const orderedSparkLabels = computed(() => {
   <div
     class="line-crypto w-100 block flex flex-1 h-16 mb-1 cursor-pointer"
     @click="
-      (event) =>
+      () =>
         $router.push({
           name: ROUTE_CRYPTO_VIEW.name,
           params: { id: crypto.id },
@@ -76,7 +71,7 @@ const orderedSparkLabels = computed(() => {
     <div class="flex w-20 pl-2 pr-2 items-center">
       <img
         v-if="crypto.image"
-        :src="crypto.image"
+        v-lazy="crypto.image"
         class="w-8 h-8 border-round rounded-full"
       />
       <Spinner v-else color="#DDD" size="small" class="inline-block mx-auto" />

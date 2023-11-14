@@ -1,10 +1,6 @@
-import { TCryptoData } from "@/stores/crypto.types";
+import { TCryptoData, TSortCharacter } from "@/api/api";
 
-type TSortCharacter = {
-  [key: string]: string;
-};
-
-export const sorterCharactere = (index: string) => {
+export const sorterCharacter = (index: string) => {
   return (a: TSortCharacter, b: TSortCharacter): number => {
     if (a[index] < b[index]) {
       return -1;
