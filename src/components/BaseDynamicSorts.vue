@@ -2,8 +2,9 @@
 import type { BaseDynamicList } from "@/app.organizer";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { sorterCharactere, sorterPrices, sorterSparkline7days} from "@/utils/sorters";
+import { sorterCharacter, sorterPrices, sorterSparkline7days} from "@/utils/sorters";
 import { useCryptoStore } from "@/stores/crypto";
+import { BarsArrowDownIcon, BarsArrowUpIcon } from '@heroicons/vue/24/solid'
 
 export type TDynamicSort = {
   index: string;
@@ -22,7 +23,7 @@ const { currencyActive } = useCryptoStore();
 const lastSorter = ref<TDynamicSort>({
   index: "name",
   order: "asc",
-  sorter: sorterCharactere("name"),
+  sorter: sorterCharacter("name"),
 });
 
 const updateSorter = (sortName: string) => {
@@ -30,7 +31,7 @@ const updateSorter = (sortName: string) => {
   let alreadyActiveSorter: boolean = lastSorter.value.index === sortName;
   let order: "asc" | "desc" =
     alreadyActiveSorter && lastSorter.value.order === "asc" ? "desc" : "asc";
-  if (["name"].includes(sortName)) sorter = sorterCharactere(sortName);
+  if (["name"].includes(sortName)) sorter = sorterCharacter(sortName);
   else if (["market_cap", "current_price", "total_volume"].includes(sortName))
     sorter = sorterPrices(currencyActive, sortName);
   else if (["sparkline_in_7d"].includes(sortName)) sorter = sorterSparkline7days(currencyActive, sortName)
@@ -59,8 +60,7 @@ const updateController = (sort: TDynamicSort) => {
 
 onMounted(() => {
   updateSorter('name');
-})
-
+});
 </script>
 
 <template>
@@ -68,31 +68,31 @@ onMounted(() => {
     <div class="block flex w-20 pl-2 pr-2 items-center" />
     <div
       class="flex w-48 pl-4 pr-4 items-center align-center text-gray-600 dark:text-white font-bold cursor-pointer"
-      @click="(event) => updateSorter('name')"
+      @click="() => updateSorter('name')"
     >
       {{ print("name") }}
+      <template v-if="lastSorter.index === 'name'">
+        <BarsArrowDownIcon v-if="lastSorter.order === 'asc'" class="h-6 w-6 text-grey-500 mx-2" />  
+        <BarsArrowUpIcon v-if="lastSorter.order === 'desc'" class="h-6 w-6 text-grey-500 mx-2" />  
+      </template>
     </div>
     <div
-      class="flex pl-4 pr-4 w-36 items-center align-center text-gray-600 dark:text-white font-bold cursor-pointer"
-      @click="(event) => updateSorter('current_price')"
+      class="flex pl-4 pr-4 w-36 items-center align-center text-gray-600 dark:text-white font-bold"
     >
       {{ print("current_price") }}
     </div>
     <div
-      class="flex pl-4 pr-4 w-36 items-center align-center text-gray-600 dark:text-white font-bold cursor-pointer"
-      @click="(event) => updateSorter('market_cap')"
+      class="flex pl-4 pr-4 w-36 items-center align-center text-gray-600 dark:text-white font-bold whitespace-nowrap"
     >
       {{ print("market_cap") }}
     </div>
     <div
-      class="flex pl-4 pr-4 w-36 items-center align-center text-gray-600 dark:text-white font-bold cursor-pointer"
-      @click="(event) => updateSorter('total_volume')"
+      class="flex pl-4 pr-4 w-36 items-center align-center text-gray-600 dark:text-white font-bold whitespace-nowrap"
     >
       {{ print("total_volume") }}
     </div>
     <div
-      class="flex flex-1 w-300 items-center align-center justify-center text-gray-600 dark:text-white font-bold cursor-pointer"
-      @click="(event) => updateSorter('sparkline_in_7d')"
+      class="flex flex-1 w-300 items-center align-center justify-center text-gray-600 dark:text-white font-bold whitespace-nowrap"
     >
       {{ print("last_7_day") }}
     </div>

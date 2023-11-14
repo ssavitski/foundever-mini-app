@@ -5,7 +5,6 @@ import {
   inject,
   DefineComponent,
   onMounted,
-  watch,
   Ref,
 } from "vue";
 import {
@@ -15,25 +14,20 @@ import {
   BaseDynamicSorts,
   BaseDynamicList,
   BaseLineCrypto,
-  BaseLoader,
 } from "@/app.organizer";
 import { useCryptoStore } from "@/stores/crypto";
 import { useI18n } from "vue-i18n";
 import { TCryptoData } from "@/stores/crypto.types";
 import { IAppProvider } from "@/providers/app";
 import { storeToRefs } from "pinia";
-import { useRoute } from "vue-router";
+import { onBeforeRouteUpdate } from "vue-router";
 
-type TEventLists = {
-  newList: TCryptoData[];
-  oldList: TCryptoData[];
-};
 
 const App = inject<IAppProvider>("App");
 
 const props = defineProps<{
   title: string;
-  cryptoList: Map<string, TCryptoData>;
+  cryptoList: Record<string, TCryptoData>;
   component: DefineComponent<any, any, any>;
 }>();
 
@@ -43,26 +37,31 @@ const cryptoStore = useCryptoStore();
 const {
   currencyActive,
   currenciesList,
-  isReadyCategories,
-  isReadyCurrencies,
-  isReadyCryptoList,
+  itemsByPage,
 } = storeToRefs(cryptoStore);
 
 const { fetchCryptosInfos, setCurrencyActive } = cryptoStore;
-const isReadyCryptoStore = computed(
-  () => isReadyCategories.value && isReadyCurrencies.value && isReadyCryptoList.value
-);
 
-const itemsByPage = 150;
+const blocCurrent = ref(1);
 const dynamicController = ref() as Ref<typeof BaseDynamicList>;
 const refInputFilter = ref() as Ref<typeof BaseInputFilter>;
 
-const updatePricesForList = ({ newList, oldList }: TEventLists) => {
-  const toUpdatePricesList = newList.filter((e) => {
-    if (!e.pricesByCurrencies[currencyActive.value]) return true;
-    return !oldList.find((f) => e.id === f.id);
-  });
+const updatePricesForList = (orderedCryptoList: TCryptoData[]) => {
+  const toUpdatePricesList = orderedCryptoList.filter((e) => !e.pricesByCurrencies[currencyActive.value]);
+
   fetchCryptosInfos(toUpdatePricesList);
+};
+
+const cryptoData = computed(() =>
+  Object.values(props.cryptoList).slice(0, blocCurrent.value * itemsByPage.value)
+);
+
+const onCurrencyChange = (currency: string) => {
+  if (currency !== currencyActive.value) {
+    setCurrencyActive(currency);
+
+    fetchCryptosInfos(cryptoData.value);
+  }  
 };
 
 const currenciesListOptions = computed(() => {
@@ -74,30 +73,18 @@ const currenciesListOptions = computed(() => {
   });
 });
 
-const route = useRoute();
-watch(
-  () => route.name,
-  () => {
-    if (refInputFilter) refInputFilter.value.reset();
-    if (dynamicController) dynamicController.value.onReset();
-  }
-);
+onBeforeRouteUpdate(() => {
+  if (refInputFilter) refInputFilter.value.reset();
+  if (dynamicController) dynamicController.value.onReset();
+});
 
 onMounted(async () => {
-  fetchCryptosInfos(
-    Array.from(props.cryptoList)
-      .map(([key, value]) => value)
-      .slice(0, itemsByPage)
-  );
+  fetchCryptosInfos(cryptoData.value);
 });
 </script>
 
 <template>
-  <div v-if="!isReadyCryptoStore" class="flex flex-1 relative">
-    <BaseLoader :text="print('loading_data')" />
-  </div>
   <div
-    v-else
     class="flex flex-1 flex-col pt-16 w-full lg:w-5/6 max-w-screen-xl self-center"
   >
     <div class="flex flex-col max-w-screen w-full bg-blue mx-auto">
@@ -118,7 +105,7 @@ onMounted(async () => {
             index="currency"
             :default="currencyActive"
             :options="currenciesListOptions"
-            @onChange="setCurrencyActive"
+            @onChange="onCurrencyChange"
             class="rounded-r-full h-10 shadow uppercase font-bold pl-3 a-08 d-500 fadeInDown"
           />
         </div>
@@ -131,21 +118,20 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="db-list flex-1 flex flex-col p-1">
+    <div v-if="cryptoData.length" class="db-list flex-1 flex flex-col p-1">
       <BaseDynamicList
         class="d-400 a-04 fadeInUp"
         component-key="id"
         ref="dynamicController"
         :items="props.cryptoList"
-        :items-by-bloc="itemsByPage"
+        :items-by-page="itemsByPage"
+        :bloc-current="blocCurrent"
         :component="BaseLineCrypto"
-        :watcher="currencyActive"
         :no-result-text="print('no_result')"
         :loader-color="App?.theme.value === 'dark' ? 'white' : 'black'"
-        @onRequestNextBloc="(data) => updatePricesForList(data as TEventLists)"
+        @onRequestNextBloc="(data: TCryptoData[]) => updatePricesForList(data)"
+        @onChangeCurBloc="(value: number) => blocCurrent = value"
       />
     </div>
   </div>
 </template>
-
-<style lang="scss"></style>

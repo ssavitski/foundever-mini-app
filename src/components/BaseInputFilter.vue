@@ -29,9 +29,8 @@ const updateController = (e: Event) => {
 const reset = () => inputValue.value = "";
 
 defineExpose({
-  reset
-})
-
+  reset,
+});
 </script>
 
 <template>
@@ -39,5 +38,7 @@ defineExpose({
 </template>
 
 <style lang="scss" scoped>
-  *:focus {outline:0px none transparent;}
+*:focus {
+  outline:0px none transparent;
+}
 </style>

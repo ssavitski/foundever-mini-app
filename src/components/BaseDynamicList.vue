@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, DefineComponent, defineExpose, VNodeRef } from "vue";
+import { ref, computed, DefineComponent, defineExpose, VNodeRef } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 import { Spinner } from "@/app.organizer";
 import { TDynamicSort } from "./BaseDynamicSorts.vue";
@@ -20,120 +20,123 @@ type TDynamicsFilters = {
   }
 };
 
-const props = defineProps<{
-  items: Map<string, any>;
-  itemsByBloc: number;
-  component: DefineComponent<any, any, any>;
-  componentKey: string;
-  watcher: any;
-  noResultText: string
-  loaderColor?: string
-}>();
+type TProps = {
+  items: Record<string, TCryptoData>,
+  itemsByPage: number,
+  blocCurrent: number,
+  component: DefineComponent<any, any, any>,
+  componentKey: keyof TCryptoData,
+  noResultText: string,
+  loaderColor?: string,
+};
 
-const emit = defineEmits<{
-  (e: "onRequestNextBloc", {}): void;
-}>();
+type TEmit = {
+  (e: "onRequestNextBloc", {}): void,
+  (e: "onChangeCurBloc", {}): void,
+};
 
-const blocCurrent = ref(0);
+const props = defineProps<TProps>();
+const emit = defineEmits<TEmit>();
+
 const scroller = ref<VNodeRef & HTMLElement>();
 const dynamicLoading = ref(false);
 const dynamicFilters = ref({} as TDynamicsFilters);
 const dynamicSorter = ref({} as TDynamicSort);
-const dynamicWatcher = computed(() => props.watcher);
-
 
 
 const filteredList = computed(() => {
   const filters = Object.entries(dynamicFilters.value)
-  if (!filters.length) return Array.from(props.items).map(([_, value]) => value)
-  return Array.from(props.items).map(([_, value]) => value).filter((item, index) => {
-    for (let [ref, { indexes, values }] of filters) {
+  if (!filters.length) return Object.values(props.items);
+
+  return Object.values(props.items).filter((item) => {
+    for (let [, { indexes, values }] of filters) {
       for (let index of indexes) {
         for (let value of values) {
-          if (item[index].toLowerCase().includes(value.toLowerCase())) return true
+          if (
+            (item[index as keyof TCryptoData] as string)
+              .toLowerCase()
+              .includes(value.toLowerCase())
+          ) return true;
         }
       }
     }
-  })
-})
-
-const optimizedList = computed(() => { 
-  return filteredList.value.slice(0, blocCurrent.value * props.itemsByBloc)
-})
+  });
+});
 
 const orderedList = computed<TCryptoData[]>(() => {
   try {
-  let ordered = optimizedList.value.sort(dynamicSorter.value.sorter);
-  if (dynamicSorter.value.order === "desc") ordered = ordered.reverse();
-  return ordered;
+    let ordered = filteredList.value.sort(dynamicSorter.value.sorter);
+    if (dynamicSorter.value.order === "desc") ordered = ordered.reverse();
+    return ordered;
   }
   catch(e) {
     console.warn(e);
-    return optimizedList.value
+    return filteredList.value;
   }
-})
+});
+
+const optimizedList = computed(() => {
+  return orderedList.value.slice(0, props.blocCurrent * props.itemsByPage);
+});
 
 let timeoutUpdateFilters: NodeJS.Timeout;
 
 const onUpdateFilters = ({
   ref,
   indexes,
-  values
+  values,
 }: TParamsUpdateFilters) => {
   values = values.filter((e) => (e && e !== ''));
   if (values.length) {
     clearTimeout(timeoutUpdateFilters);
     dynamicLoading.value = true;
     timeoutUpdateFilters = setTimeout(() => {
-        blocCurrent.value = 1;
-        dynamicLoading.value = false;
-        dynamicFilters.value[ref] = {
+      emit("onChangeCurBloc", 1);
+
+      dynamicLoading.value = false;
+      dynamicFilters.value[ref] = {
         indexes,
         values,
       };
-    }, 650)
-  } else delete dynamicFilters.value[ref];
+      emit("onRequestNextBloc", optimizedList.value);
+    }, 650);
+
+    return;
+  }
+
+  delete dynamicFilters.value[ref];
+  emit("onRequestNextBloc", optimizedList.value);
 };
 
 const onUpdateSorters = (sorter: TDynamicSort) => {
   dynamicSorter.value = sorter;
+  emit("onRequestNextBloc", optimizedList.value);
 };
 
 const onReset = async() => {
-  dynamicFilters.value = {} as TDynamicsFilters
-  blocCurrent.value = 1;
+  dynamicFilters.value = {} as TDynamicsFilters;
+
+  emit("onChangeCurBloc", 1);
+
   if (scroller.value) scroller.value.scrollTo(0,0);
 }
 
-watch(
-  [orderedList, dynamicWatcher],
-  ([newOptimizedList], [oldOptimizedList]) => {
-    emit("onRequestNextBloc", {
-      newList: newOptimizedList,
-      oldList: oldOptimizedList,
-    });
-  }
-);
-
-useScroll(scroller, { behavior: 'smooth' })
+useScroll(scroller, { behavior: 'smooth' });
 
 useInfiniteScroll(
   scroller,
   () => {
-    blocCurrent.value++;
+    emit("onChangeCurBloc", props.blocCurrent + 1);
+    emit("onRequestNextBloc", orderedList.value.slice(0, (props.blocCurrent + 1) * props.itemsByPage));
   },
-  { distance: 200 }
+  { distance: 400 },
 );
-
-onMounted(() => {
-  blocCurrent.value += 1;
-});
 
 defineExpose({
   onUpdateFilters,
   onUpdateSorters,
   onReset,
-})
+});
 
 </script>
 
@@ -141,29 +144,29 @@ defineExpose({
   <div
     ref="scroller"
     class="scroller h-10 overflow-y-scroll flex-auto"
-  > 
+  >
     <div
-      v-if="!orderedList.length"
+      v-if="!optimizedList.length"
       class="flex flex-1 h-full text-4xl font-bold justify-center items-center"
       :style="{ color: props.loaderColor }"
     >
-      {{  props.noResultText }}
+      {{ props.noResultText }}
     </div>
     <Spinner v-else-if="dynamicLoading" :color="props.loaderColor" />
     <template v-else>
       <component
         :is="props.component"
-        v-for="item in orderedList"
+        v-for="item in optimizedList"
         :key="`${item[props.componentKey]}`"
-        :item-id="item.id"
+        :item="item"
       />
     </template>
   </div>
 </template>
 
 <style lang="scss">
-  .scroller {
-    scrollbar-color: #687dfa rgba(0,0,0,0.1);
-    scrollbar-width: thin;
-  }
+.scroller {
+  scrollbar-color: #687dfa rgba(0,0,0,0.1);
+  scrollbar-width: thin;
+}
 </style>

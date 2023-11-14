@@ -4,7 +4,7 @@
   import "./assets/css/animate.css";
   import { useAppProvider, IAppProvider } from "@/providers/app";
   import { useRouter } from "vue-router";
-  import { useCryptoStore } from '@/stores/crypto';
+  import { useCryptoStore } from "@/stores/crypto";
   import { useI18n } from "vue-i18n";
 
   const router = useRouter();
@@ -15,14 +15,12 @@
   locale.value = App.lang.value;
   
   const {
-    fetchCategoriesList,
     fetchCurrenciesList,
     fetchCryptoList,
   } = useCryptoStore();
   
   onMounted(() => {
     fetchCurrenciesList();
-    fetchCategoriesList()
     fetchCryptoList();
   })
 </script>

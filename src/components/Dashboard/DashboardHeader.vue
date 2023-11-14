@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch, inject } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, inject } from "vue";
+import { useRouter, onBeforeRouteUpdate } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { IAppProvider, TLangs } from "@/providers/app";
 import { Flag } from '@/app.organizer';
@@ -16,21 +16,19 @@ const router = useRouter();
 const { t: print, locale } = useI18n();
 const isMobileMenuOpen = ref(false);
 const currentRouteName = computed(() => router.currentRoute.value.name);
-const activeLanguage = computed(() => App.lang.value);
 
 const setMobileMenuOpen = (value: boolean) => {
   isMobileMenuOpen.value = value;
 };
 
 const changeLanguage = (value: TLangs) => {
-    locale.value = value;
-    App.setLanguage(value)
-}
+  locale.value = value;
+  App.setLanguage(value);
+};
 
-watch(currentRouteName, () => {
+onBeforeRouteUpdate(() => {
   isMobileMenuOpen.value = false;
 });
-
 </script>
 
 <template>
@@ -126,18 +124,20 @@ watch(currentRouteName, () => {
         </div>
         <div class="xs:w-full xs:text-center hidden lg:flex lg:order-1">
           <Flag
-            :type="'fr'"
+            type="fr"
             class="flag"
             width="40px"
             @click="() => changeLanguage('fr')"
             :is-active="App.lang.value === 'fr'"
+            :mode="App.theme.value"
           />
           <Flag
-            :type="'en'"
-            class="flag"
+            type="en"
+            class="flag mx-1"
             width="40px"
             @click="() => changeLanguage('en')"
             :is-active="App.lang.value === 'en'"
+            :mode="App.theme.value"
           />
         </div>
         <div class="hidden lg:flex lg:order-3">
@@ -156,13 +156,12 @@ watch(currentRouteName, () => {
             ></div>
             <span
               class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300 capitalize"
-              > {{ App.theme.value }} Mode</span
             >
+              {{ print(`${App.theme.value}_mode`) }}
+            </span>
           </label>
         </div>
       </div>
     </nav>
   </header>
 </template>
-
-<style lang="scss"></style>

@@ -43,15 +43,14 @@ const chartColors = computed(() => {
     return {
       borderColor: "rgba(50,255,150,0.3)",
       pointBackgroundColor: "rgba(50,255,50,1)"
-    }
+    };
   }
-  else {
-    return {
-      borderColor: "rgba(255,50,50,0.2)",
-      pointBackgroundColor: "rgba(255,70,70,1)",
-    }
-  }
-})
+
+  return {
+    borderColor: "rgba(255,50,50,0.2)",
+    pointBackgroundColor: "rgba(255,70,70,1)",
+  };
+});
 
 const chartData = computed(() => {
   return {
@@ -62,7 +61,7 @@ const chartData = computed(() => {
         data: props.sparkline,
         borderColor: chartColors.value.borderColor,
         pointBackgroundColor: chartColors.value.pointBackgroundColor,
-        tension: 0.4
+        tension: 0.4,
       },
     ],
   };
@@ -73,7 +72,7 @@ const getAnimation = computed(() => {
     duration: 1000,
   }
   return false;
-})
+});
 
 const options = computed<ChartOptions<"line">>(() => ({
   animation: getAnimation.value,
@@ -118,7 +117,7 @@ const { lineChartProps } = useLineChart({
   transition: none;
   width: 100%;
   height: 100%;
-  padding: rem(10px);
+  padding: 10px;
   border-radius: 0.625rem;
   // background-color: hsl(0, 0%, 100%);
 

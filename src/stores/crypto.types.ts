@@ -1,15 +1,12 @@
-
 export type TCryptoDefaultStates= {
-  cryptoList: Map<string,TCryptoData>
-  currenciesList: string[]
-  categoriesList: TCategoryData[]
-  currencyActive: string
-  categoryActive: string | null
-  cryptoFavorites: Map<string,TCryptoData>
+  cryptoList: TCryptoList,
+  currenciesList: string[],
+  currencyActive: string,
+  cryptoFavorites: TCryptoList,
+  itemsByPage: number,
 }
-export type TCryptoList = {
-  [key: string]: TCryptoData
-}
+
+export type TCryptoList = Record<string, TCryptoData>;
 
 export type TEntryCryptoData = {
   id: string,
@@ -40,12 +37,14 @@ export type TCryptoData = {
   }
 }
 
-export type TEntryCategoryData = {
-  category_id: string
-  name: string
+export type TMarketParams = {
+  ids: string,
+  vs_currency: string,
+  per_page: number,
+  include_24h_vol: boolean,
+  include_24hr_change: boolean,
+  include_last_updated_at: boolean,
+  sparkline: boolean,
 }
 
-export type TCategoryData = {
-  id: string,
-  name: string,
-}
+export type TCryptoItem = Omit<TCryptoData, 'pricesByCurrencies'>;

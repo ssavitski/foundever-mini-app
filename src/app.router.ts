@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router';
 
 import {
   ROUTE_CRYPTO_OVERVIEW,
@@ -29,13 +29,13 @@ const routes = [
   {
     path: ROUTE_NOT_FOUND.path,
     name: ROUTE_NOT_FOUND.name,
-    component: ROUTE_NOT_FOUND.component
-  }
-]
+    component: ROUTE_NOT_FOUND.component,
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: routes,
-})
+});
 
-export default router
+export default router;
