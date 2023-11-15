@@ -42,7 +42,7 @@ export default () => {
   };
 
   const fetchCryptosInfos = async (optimizedList: TCryptoData[]): Promise<void> => {
-    const requestIds = optimizedList.filter((crypto) => !crypto.pricesByCurrencies[currencyActive]);
+    const requestIds = optimizedList.filter((crypto) => !crypto.pricesByCurrencies[currencyActive.value]);
 
     if (!requestIds.length) {
       return;
@@ -72,32 +72,46 @@ export default () => {
       return;
     }
 
-    for (let i = 0; i < responseArray.length; i++) {
-      const {
-        id: key,
-        image,
-        sparkline_in_7d: { price: sparkline_in_7d },
-        current_price,
-        market_cap,
-        total_volume,
-        price_change_24h,
-      } = responseArray[i];
+    let i = 0;
 
-      const item = cryptoList.value[key];
+    const fillCryptoInfo = () => {
+      if (i < responseArray.length) {
+        setTimeout(fillCryptoInfo);
+      } else {
+        return;
+      }
 
-      if (item) {
-        item.image = image;
-        item.sparkline_in_7d = sparkline_in_7d;
-        item.pricesByCurrencies[currencyActive] = {
+      do {
+        const {
+          id: key,
+          image,
+          sparkline_in_7d: { price: sparkline_in_7d },
           current_price,
           market_cap,
           total_volume,
           price_change_24h,
-        };
-        cryptoList.value[key] = item;
-        if (cryptoFavorites.value[key]) changeFavorite(item, key);
-      }
+        } = responseArray[i];
+  
+        const item = cryptoList.value[key];
+  
+        if (item) {
+          item.image = image;
+          item.sparkline_in_7d = sparkline_in_7d;
+          item.pricesByCurrencies[currencyActive.value] = {
+            current_price,
+            market_cap,
+            total_volume,
+            price_change_24h,
+          };
+          cryptoList.value[key] = item;
+          if (cryptoFavorites.value[key]) changeFavorite(item, key);
+        }
+
+        i++;
+      } while (i % 50 != 0 && i < responseArray.length);
     }
+
+    fillCryptoInfo();
   };
 
   return {
