@@ -16,6 +16,7 @@ import {
 
 const cryptoList = ref<TCryptoList>({});
 const itemsByPage = 150;
+const blocCurrent = ref(1);
 
 export default () => {
   const { currencyActive } = useCurrencies();
@@ -53,7 +54,7 @@ export default () => {
     const query: TMarketParams = {
       ids,
       vs_currency: currencyActive.value,
-      per_page: itemsByPage,
+      per_page: blocCurrent.value * itemsByPage,
       include_24h_vol: true,
       include_24hr_change: true,
       include_last_updated_at: true,
@@ -114,11 +115,17 @@ export default () => {
     fillCryptoInfo();
   };
 
+  const setBlocCurrent = (value: number) => {
+    blocCurrent.value = value;
+  };
+
   return {
     cryptoList: readonly(cryptoList),
     isReadyCryptoList,
     fetchCryptoList,
     fetchCryptosInfos,
     itemsByPage,
+    blocCurrent,
+    setBlocCurrent,
   };
 };

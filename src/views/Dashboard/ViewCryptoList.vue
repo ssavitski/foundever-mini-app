@@ -34,9 +34,8 @@ const props = defineProps<{
 const { t: print } = useI18n();
 
 const { currenciesList, currencyActive, setCurrencyActive } = useCurrencies();
-const { fetchCryptosInfos, itemsByPage } = useCrypto();
+const { fetchCryptosInfos, itemsByPage, blocCurrent, setBlocCurrent } = useCrypto();
 
-const blocCurrent = ref(1);
 const dynamicController = ref() as Ref<typeof BaseDynamicList>;
 const refInputFilter = ref() as Ref<typeof BaseInputFilter>;
 
@@ -124,7 +123,7 @@ onMounted(async () => {
         :no-result-text="print('no_result')"
         :loader-color="App?.theme.value === 'dark' ? 'white' : 'black'"
         @onRequestNextBloc="(data: TCryptoData[]) => updatePricesForList(data)"
-        @onChangeCurBloc="(value: number) => blocCurrent = value"
+        @onChangeCurBloc="(value: number) => setBlocCurrent(value)"
       />
     </div>
   </div>
