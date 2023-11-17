@@ -1,4 +1,4 @@
-import { TCryptoData, TSortCharacter } from "@/api/api";
+import { TCryptoData, TSortCharacter } from "@/composables/api/api";
 
 export const sorterCharacter = (index: string) => {
   return (a: TSortCharacter, b: TSortCharacter): number => {
@@ -42,10 +42,10 @@ export const sorterPrices = (currency: string, index: string) => {
   };
 };
 
-export const sorterSparkline7days = (currency: string, index: string) => {
+export const sorterSparkline7days = () => {
   return (a: TCryptoData, b: TCryptoData): number => {
-    let A: any = a?.sparkline_in_7d
-    let B: any = b?.sparkline_in_7d
+    let A: any = a?.sparkline_in_7d;
+    let B: any = b?.sparkline_in_7d;
 
     if (A && !B) return -1;
     else if (!A && B) return 1;

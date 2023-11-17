@@ -1,14 +1,14 @@
 import { readonly, ref, computed } from "vue";
 import useLocalStorage from "@/composables/useLocalStorage";
 import { LOCALSTORAGE_CRYPTO_CURRENCY } from "@/app.storages";
-import {
-  fetchCurrencies,
-} from "@/api/crypto";
+import useCrypto from "@/composables/api/useCrypto";
+
 
 const currenciesList = ref<string[]>([]);
 const currencyActive = ref(useLocalStorage.get(LOCALSTORAGE_CRYPTO_CURRENCY) || 'eur');
 
 export default () => {
+  const { fetchCurrencies } = useCrypto();
   const isReadyCurrencies = computed(() => !!currenciesList.value.length);
 
   const fetchCurrenciesList = async (): Promise<void> => {

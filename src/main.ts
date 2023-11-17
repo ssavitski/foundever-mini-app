@@ -4,6 +4,8 @@ import router from "./app.router";
 import { createMetaManager } from "vue-meta";
 import { createI18n } from "vue-i18n";
 import VueLazyLoad from "vue3-lazyload";
+import ToastPlugin from "vue-toast-notification";
+import "vue-toast-notification/dist/theme-bootstrap.css";
 /*
 * DevNote : This language import method is only for demo.
 * In my projects I use my own asynchronous methods for each language loading to apply Load On Need,
@@ -24,6 +26,7 @@ const i18n = createI18n({
 const app = createApp(App);
 app.use(router);
 app.use(i18n);
+app.use(ToastPlugin);
 app.use(VueLazyLoad, {});
 app.use(createMetaManager());
 app.mount("#root");

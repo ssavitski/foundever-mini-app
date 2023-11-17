@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { TCryptoData } from "@/api/api";
+import { TCryptoData } from "@/composables/api/api";
 import useCurrencies from "@/composables/useCurrencies";
 import useFavorites from "@/composables/useFavorites";
 import { BaseCryptoChart, FavoriteStar, Spinner } from "@/app.organizer";

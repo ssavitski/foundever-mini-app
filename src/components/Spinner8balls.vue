@@ -9,29 +9,29 @@ const props = defineProps<{
 }>();
 
 const getClass = computed(() => {
-  let c = ''
-  if (props.size === 'small') c += 'small d-inblock ' 
-  else if (props.size) c += 'small d-inblock'
+  let c = '';
+  if (props.size === 'small') c += 'small d-inblock '; 
+  else if (props.size) c += 'small d-inblock';
   return c;
-})
+});
 
 const getClassContainer = computed(() => {
-  let c = ''
-  if (props.size === 'small') c += 'min-loadc' 
-  else if (props.size) c += 'min-loadc' 
-  else { c += 'h-loadc' }
-  return c
-})
+  let c = '';
+  if (props.size === 'small') c += 'min-loadc'; 
+  else if (props.size) c += 'min-loadc'; 
+  else { c += 'h-loadc'; }
+  return c;
+});
 
 const getColor = computed(() => {
-  return props.color || 'blue'
-})
+  return props.color || 'blue';
+});
 
 </script>
 
 <template>
   <span :class="getClassContainer">
-    <div class="windows8" :class="getClass" :style="{'--color': getColor}" :data-color="getColor">
+    <div class="windows8" :class="getClass" :style="{ '--color': getColor }" :data-color="getColor">
       <div class="wBall" id="wBall_1"><div class="wInnerBall"></div></div>
       <div class="wBall" id="wBall_2"><div class="wInnerBall"></div></div>
       <div class="wBall" id="wBall_3"><div class="wInnerBall"></div></div>

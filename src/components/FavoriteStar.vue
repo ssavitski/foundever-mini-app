@@ -9,6 +9,8 @@ const props = defineProps<{
 const App = inject<IAppProvider>("App");
 
 const getImageSource = computed(() => {
+  let href = '';
+
   try {
     let file = "ico-star-";
     if (props.active) file += "full";
@@ -16,10 +18,12 @@ const getImageSource = computed(() => {
       file +=
         App?.theme.value === "dark" ? "empty-dark" : "empty-light";
     }
-    return new URL(`../assets/img/${file}.png`, import.meta.url).href;
+    ({ href } = new URL(`../assets/img/${file}.png`, import.meta.url));
   } catch (e) {
     console.warn(e);
   }
+
+  return href;
 });
 </script>
 

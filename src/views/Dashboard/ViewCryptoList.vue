@@ -19,7 +19,7 @@ import {
 } from "@/app.organizer";
 import useCurrencies from "@/composables/useCurrencies";
 import useCrypto from "@/composables/useCrypto";
-import { TCryptoData } from "@/api/api";
+import { TCryptoData } from "@/composables/api/api";
 import { IAppProvider } from "@/providers/app";
 
 
@@ -111,7 +111,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div v-if="cryptoData.length" class="db-list flex-1 flex flex-col p-1">
+    <div class="db-list flex-1 flex flex-col p-1">
       <BaseDynamicList
         class="d-400 a-04 fadeInUp"
         component-key="id"

@@ -70,7 +70,7 @@ const chartData = computed(() => {
 const getAnimation = computed(() => {
   if (props.animation) return {
     duration: 1000,
-  }
+  };
   return false;
 });
 

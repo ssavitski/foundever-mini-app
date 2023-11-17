@@ -1,5 +1,5 @@
 import { readonly, ref } from "vue";
-import { TCryptoData, TCryptoList } from "@/api/api";
+import { TCryptoData, TCryptoList } from "@/composables/api/api";
 import useLocalStorage from "@/composables/useLocalStorage";
 import { LOCALSTORAGE_CRYPTO_FAVORITES } from "@/app.storages";
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { TCryptoData } from "@/api/api";
+import { TCryptoData } from "@/composables/api/api";
 import useCurrencies from "@/composables/useCurrencies";
 import useFavorites from "@/composables/useFavorites";
 import {
@@ -31,7 +31,7 @@ const isInFavorites = computed(() => {
   if (crypto) !!cryptoFavorites.value[crypto.id];
 
   return false;
-})
+});
 
 
 const currenciesListOptions = computed(() => currenciesList.value.map((c) => ({

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, DefineComponent, defineExpose, VNodeRef } from "vue";
+import { ref, computed, DefineComponent, VNodeRef } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 import { Spinner } from "@/app.organizer";
 import { TDynamicSort } from "./BaseDynamicSorts.vue";
-import { useScroll } from '@vueuse/core'
-import { TCryptoData } from "@/api/api";
+import { useScroll } from '@vueuse/core';
+import { TCryptoData } from "@/composables/api/api";
 
 
 export type TParamsUpdateFilters = {
@@ -45,10 +45,10 @@ const dynamicSorter = ref({} as TDynamicSort);
 
 
 const filteredList = computed(() => {
-  const filters = Object.entries(dynamicFilters.value)
+  const filters = Object.entries(dynamicFilters.value);
   if (!filters.length) return Object.values(props.items);
 
-  return Object.values(props.items).filter((item) => {
+  const orderedList = Object.values(props.items).filter((item) => {
     for (let [, { indexes, values }] of filters) {
       for (let index of indexes) {
         for (let value of values) {
@@ -60,23 +60,15 @@ const filteredList = computed(() => {
         }
       }
     }
-  });
-});
+  }).sort(dynamicSorter.value.sorter);
 
-const orderedList = computed<TCryptoData[]>(() => {
-  try {
-    let ordered = filteredList.value.sort(dynamicSorter.value.sorter);
-    if (dynamicSorter.value.order === "desc") ordered = ordered.reverse();
-    return ordered;
-  }
-  catch(e) {
-    console.warn(e);
-    return filteredList.value;
-  }
+  if (dynamicSorter.value.order === "desc") return orderedList.reverse();
+
+  return orderedList;
 });
 
 const optimizedList = computed(() => {
-  return orderedList.value.slice(0, props.blocCurrent * props.itemsByPage);
+  return filteredList.value.slice(0, props.blocCurrent * props.itemsByPage);
 });
 
 let timeoutUpdateFilters: NodeJS.Timeout;
@@ -119,7 +111,7 @@ const onReset = async() => {
   emit("onChangeCurBloc", 1);
 
   if (scroller.value) scroller.value.scrollTo(0,0);
-}
+};
 
 useScroll(scroller, { behavior: 'smooth' });
 
@@ -127,7 +119,7 @@ useInfiniteScroll(
   scroller,
   () => {
     emit("onChangeCurBloc", props.blocCurrent + 1);
-    emit("onRequestNextBloc", orderedList.value.slice(0, (props.blocCurrent + 1) * props.itemsByPage));
+    emit("onRequestNextBloc", filteredList.value.slice(0, (props.blocCurrent + 1) * props.itemsByPage));
   },
   { distance: 400 },
 );

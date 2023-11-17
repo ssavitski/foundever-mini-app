@@ -42,7 +42,7 @@ export function useAppProvider(router: Router) {
     if (!Object.values(AVAILABLE_LANGUAGES).includes(value)) return;
     useLocalStorage.set(LOCALSTORAGE_LANGUAGE, value);
     state.lang = value;
-  }
+  };
 
   const setTheme = (value: string): void => {
     if (!Object.values(AVAILABLE_THEMES).includes(value)) return;

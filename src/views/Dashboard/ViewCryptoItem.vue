@@ -2,7 +2,7 @@
 import { onMounted, computed } from "vue";
 import { BaseCardCrypto } from "@/app.organizer";
 import useCrypto from "@/composables/useCrypto";
-import { TCryptoData } from "@/api/api";
+import { TCryptoData } from "@/composables/api/api";
 import { useRouter } from "vue-router";
 import { ROUTE_CRYPTO_OVERVIEW } from "@/app.routes";
 

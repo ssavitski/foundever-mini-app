@@ -4,7 +4,7 @@ import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { sorterCharacter, sorterPrices, sorterSparkline7days} from "@/utils/sorters";
 import useCurrencies from "@/composables/useCurrencies";
-import { BarsArrowDownIcon, BarsArrowUpIcon } from '@heroicons/vue/24/solid'
+import { BarsArrowDownIcon, BarsArrowUpIcon } from '@heroicons/vue/24/solid';
 
 export type TDynamicSort = {
   index: string;
@@ -34,7 +34,7 @@ const updateSorter = (sortName: string) => {
   if (["name"].includes(sortName)) sorter = sorterCharacter(sortName);
   else if (["market_cap", "current_price", "total_volume"].includes(sortName))
     sorter = sorterPrices(currencyActive, sortName);
-  else if (["sparkline_in_7d"].includes(sortName)) sorter = sorterSparkline7days(currencyActive, sortName)
+  else if (["sparkline_in_7d"].includes(sortName)) sorter = sorterSparkline7days();
   else sorter = null;
 
   if (sorter) {
@@ -42,7 +42,7 @@ const updateSorter = (sortName: string) => {
       index: sortName,
       order: order,
       sorter: sorter as (a: any, b: any) => number,
-    }
+    };
     updateController(lastSorter.value);
   }
 };
