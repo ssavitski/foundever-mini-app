@@ -1,15 +1,35 @@
 <script setup lang="ts">
-
+/**
+ * Country flag for languages support.
+ * @displayName Flag
+ */
 type TProps = {
+  /**
+   * Country code, currently only 2 is supported.
+   */
   type: 'en' | 'fr';
+  /**
+   * Width of the flag
+   */
   width?: string;
+  /**
+   * Determines either current flag is active or not
+   */
   isActive: boolean;
+  /**
+   * Accepts mode of the application for further customization
+   */
   mode: 'light' | 'dark',
+  /**
+   * Accepts state of the application
+   */
+  isLoading: boolean;
 };
 const props = withDefaults(defineProps<TProps>(), {
   width: "30px",
   isLoading: false,
   isActive: true,
+  mode: "light",
 });
 
 const imageSource = new URL(`../assets/img/flags/${props.type}.png`, import.meta.url).href;
