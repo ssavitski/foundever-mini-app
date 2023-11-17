@@ -118,8 +118,15 @@ useScroll(scroller, { behavior: 'smooth' });
 useInfiniteScroll(
   scroller,
   () => {
-    emit("onChangeCurBloc", props.blocCurrent + 1);
-    emit("onRequestNextBloc", filteredList.value.slice(0, (props.blocCurrent + 1) * props.itemsByPage));
+    const currentLength = filteredList.value.length;
+    const currentExpectedLength = props.blocCurrent * props.itemsByPage;
+
+    if (currentLength > currentExpectedLength) {
+      const blocCurrent = props.blocCurrent + 1;
+
+      emit("onChangeCurBloc", blocCurrent);
+      emit("onRequestNextBloc", filteredList.value.slice(0, blocCurrent * props.itemsByPage));
+    }
   },
   { distance: 400 },
 );
