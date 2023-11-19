@@ -20,14 +20,9 @@ type TProps = {
    * Accepts mode of the application for further customization
    */
   mode: 'light' | 'dark',
-  /**
-   * Accepts state of the application
-   */
-  isLoading: boolean;
 };
 const props = withDefaults(defineProps<TProps>(), {
   width: "30px",
-  isLoading: false,
   isActive: true,
   mode: "light",
 });
@@ -42,7 +37,7 @@ const imageSource = new URL(`../assets/img/flags/${props.type}.png`, import.meta
     :style="{ width: props.width }"
   >
     <img
-      :class="{ isloading: props.isLoading, active: props.isActive, [props.mode]: true }"
+      :class="{ active: props.isActive, [props.mode]: true }"
       class="el-flags"
       :src="imageSource"
       style="width: 100%"
@@ -71,11 +66,6 @@ const imageSource = new URL(`../assets/img/flags/${props.type}.png`, import.meta
     cursor: pointer;
     opacity: 0.5;
     border: 2px solid rgba(0, 0, 0, 0);
-  }
-
-  &.isloading {
-    border-radius: 5px;
-    border: 2px dashed rgba(255, 255, 255, 0.4);
   }
 }
 </style>

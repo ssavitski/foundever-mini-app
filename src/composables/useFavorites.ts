@@ -17,15 +17,18 @@ const loadFavorites = (): TCryptoList => {
 const cryptoFavorites = ref<TCryptoList>(loadFavorites());
 
 export default () => {
-  const addFavorite = ({ id, name }: TCryptoData) => {
+  const addFavorite = ({ id, name, category, image, sparkline_in_7d, pricesByCurrencies }: TCryptoData) => {
     cryptoFavorites.value[id] = {
       id,
       name,
+      image,
+      category,
+      sparkline_in_7d,
       symbol: name,
-      pricesByCurrencies: {},
+      pricesByCurrencies: Object.keys(pricesByCurrencies).length ? pricesByCurrencies : {},
     };
 
-    useLocalStorage.set(LOCALSTORAGE_CRYPTO_FAVORITES, cryptoFavorites);
+    useLocalStorage.set(LOCALSTORAGE_CRYPTO_FAVORITES, cryptoFavorites.value);
   };
 
   const changeFavorite = (favorite: TCryptoData, key: string) => {
@@ -34,7 +37,7 @@ export default () => {
 
   const removeFavorite = (crypto: TCryptoData) => {
     delete cryptoFavorites.value[crypto.id];
-    useLocalStorage.set(LOCALSTORAGE_CRYPTO_FAVORITES, cryptoFavorites);
+    useLocalStorage.set(LOCALSTORAGE_CRYPTO_FAVORITES, cryptoFavorites.value);
   };
 
   return {

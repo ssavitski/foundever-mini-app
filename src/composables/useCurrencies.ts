@@ -1,6 +1,9 @@
 import { readonly, ref, computed } from "vue";
 import useLocalStorage from "@/composables/useLocalStorage";
-import { LOCALSTORAGE_CRYPTO_CURRENCY } from "@/app.storages";
+import {
+  LOCALSTORAGE_CRYPTO_CURRENCY,
+  LOCALSTORAGE_CRYPTO_CURRENCIES_LIST,
+} from "@/app.storages";
 import useCrypto from "@/composables/api/useCrypto";
 
 
@@ -17,7 +20,7 @@ export default () => {
       return;
     }
 
-    const cacheCurrencies = useLocalStorage.get("temp_currencies");
+    const cacheCurrencies = useLocalStorage.get(LOCALSTORAGE_CRYPTO_CURRENCIES_LIST);
 
     if (cacheCurrencies?.length) {
       currenciesList.value = cacheCurrencies;
@@ -25,7 +28,7 @@ export default () => {
     } 
 
     currenciesList.value = await fetchCurrencies();
-    useLocalStorage.set("temp_currencies", currenciesList.value);
+    useLocalStorage.set(LOCALSTORAGE_CRYPTO_CURRENCIES_LIST, currenciesList.value);
   };
 
   const setCurrencyActive = (currency: string) => {

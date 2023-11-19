@@ -23,11 +23,11 @@ export default () => {
   const fetchCoins: TCoins = () => {
     return instance
       .get<TCryptoItem[]>('/coins/list')
-      .then(({ data }) => data.reduce((list: TCryptoList, item: TCryptoItem) => {
+      .then(({ data }) => data?.reduce((list: TCryptoList, item: TCryptoItem) => {
         list[item.id] = { ...item, pricesByCurrencies: {} };
   
         return list;
-      }, {}))
+      }, {}) || {})
       .catch(error => {
         console.error(error);
 

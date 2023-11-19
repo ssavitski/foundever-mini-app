@@ -11,6 +11,7 @@ import {
 
 
 const App = inject("App") as IAppProvider;
+const langs: TLangs[] = [ "en", "fr" ];
 
 const router = useRouter();
 const { t: print, locale } = useI18n();
@@ -124,20 +125,14 @@ onBeforeRouteUpdate(() => {
         </div>
         <div class="xs:w-full xs:text-center hidden lg:flex lg:order-1">
           <Flag
-            type="fr"
             class="flag"
             width="40px"
-            @click="() => changeLanguage('fr')"
-            :is-active="App.lang.value === 'fr'"
+            @click="() => changeLanguage(lang)"
+            :is-active="App.lang.value === lang"
             :mode="App.theme.value"
-          />
-          <Flag
-            type="en"
-            class="flag mx-1"
-            width="40px"
-            @click="() => changeLanguage('en')"
-            :is-active="App.lang.value === 'en'"
-            :mode="App.theme.value"
+            :type="lang"
+            :class="{ 'mx-1': index }"
+            v-for="(lang, index) in langs"
           />
         </div>
         <div class="hidden lg:flex lg:order-3">
