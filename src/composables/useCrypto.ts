@@ -3,6 +3,7 @@ import useCurrencies from "@/composables/useCurrencies";
 import useFavorites from "@/composables/useFavorites";
 import { computed, readonly, ref } from "vue";
 import useCrypto from "@/composables/api/useCrypto";
+import { LOCALSTORAGE_CRYPTO_LIST } from "@/app.storages";
 import {
   TCryptoList,
   TEntryCryptoData,
@@ -30,7 +31,7 @@ export default () => {
       return;
     }
 
-    const cacheCryptoList = useLocalStorage.get("temp_crypto");
+    const cacheCryptoList = useLocalStorage.get(LOCALSTORAGE_CRYPTO_LIST);
 
     if (cacheCryptoList && Object.keys(cacheCryptoList).length) {
       cryptoList.value = cacheCryptoList;
@@ -39,7 +40,7 @@ export default () => {
 
     cryptoList.value = await fetchCoins();
 
-    useLocalStorage.set("temp_crypto", cryptoList.value);
+    useLocalStorage.set(LOCALSTORAGE_CRYPTO_LIST, cryptoList.value);
   };
 
   const calcAndFetchMarkets: (strIds: string) => Promise<TEntryCryptoData[]>[] = (strIds) => {
