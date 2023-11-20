@@ -35,6 +35,7 @@ const { t: print } = useI18n();
 
 const { currenciesList, currencyActive, setCurrencyActive } = useCurrencies();
 const { fetchCryptosInfos, itemsByPage, blocCurrent, setBlocCurrent } = useCrypto();
+let cryptoData = Object.values(props.cryptoList).slice(0, blocCurrent.value * itemsByPage);
 
 const dynamicController = ref() as Ref<typeof BaseDynamicList>;
 const refInputFilter = ref() as Ref<typeof BaseInputFilter>;
@@ -42,18 +43,15 @@ const refInputFilter = ref() as Ref<typeof BaseInputFilter>;
 const updatePricesForList = (orderedCryptoList: TCryptoData[]) => {
   const toUpdatePricesList = orderedCryptoList.filter((e) => !e.pricesByCurrencies[currencyActive.value]);
 
+  cryptoData = orderedCryptoList;
   fetchCryptosInfos(toUpdatePricesList);
 };
-
-const cryptoData = computed(() =>
-  Object.values(props.cryptoList).slice(0, blocCurrent.value * itemsByPage)
-);
 
 const onCurrencyChange = (currency: string) => {
   if (currency !== currencyActive.value) {
     setCurrencyActive(currency);
 
-    fetchCryptosInfos(cryptoData.value);
+    fetchCryptosInfos(cryptoData);
   }  
 };
 
@@ -72,7 +70,7 @@ onBeforeRouteUpdate(() => {
 });
 
 onMounted(async () => {
-  fetchCryptosInfos(cryptoData.value);
+  fetchCryptosInfos(cryptoData);
 });
 </script>
 

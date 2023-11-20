@@ -158,6 +158,7 @@ defineExpose({
         v-for="item in optimizedList"
         :key="`${item[props.componentKey]}`"
         :item="item"
+        :root="scroller"
       />
     </template>
   </div>

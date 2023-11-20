@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, Ref, VNodeRef } from "vue";
 import { TCryptoData } from "@/composables/api/api";
 import useCurrencies from "@/composables/useCurrencies";
 import useFavorites from "@/composables/useFavorites";
@@ -11,6 +11,7 @@ import { ROUTE_CRYPTO_VIEW } from "@/app.routes";
 
 const props = defineProps<{
   item: TCryptoData;
+  root: Ref<VNodeRef & HTMLElement>;
 }>();
 
 const { currencyActive } = useCurrencies();
@@ -32,7 +33,7 @@ const toggleFavorite = () => {
 
 useIntersectionObserver(chartElement, ([{ isIntersecting }]) => {
   chartIsVisible.value = isIntersecting;
-});
+}, { root: props.root });
 
 const calculatedSparkline = computed(() => {
   if (!crypto?.sparkline_in_7d?.length) return [] as number[];
